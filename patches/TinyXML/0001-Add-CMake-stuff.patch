@@ -1,0 +1,85 @@
+From 76b66b201359cf4700ecd101414b95438f9b2ee2 Mon Sep 17 00:00:00 2001
+From: "Daniele E. Domenichelli" <ddomenichelli@kde.org>
+Date: Fri, 29 Mar 2013 11:58:08 +0100
+Subject: [PATCH] Add CMake stuff
+
+---
+ CMakeLists.txt         |   51 ++++++++++++++++++++++++++++++++++++++++++++++++
+ TinyXMLConfig.cmake.in |    6 ++++++
+ 2 files changed, 57 insertions(+)
+ create mode 100644 CMakeLists.txt
+ create mode 100644 TinyXMLConfig.cmake.in
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..1439207
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,51 @@
++# Copyright (C) 2012, 2013  iCub Facility, Istituto Italiano di Tecnologia
++# Author: Daniele E. Domenichelli <daniele.domenichelli@iit.it>
++# CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
++
++cmake_minimum_required(VERSION 2.8.8)
++project(tinyxml)
++
++set(tinyxml_SRCS
++    tinystr.cpp
++    tinyxml.cpp
++    tinyxmlerror.cpp
++    tinyxmlparser.cpp
++)
++
++set(tinyxml_HDRS
++    tinystr.h
++    tinyxml.h
++)
++
++set(INCLUDE_INSTALL_DIR include/)
++set(LIB_INSTALL_DIR lib/)
++
++
++add_definitions("-DTIXML_USE_STL")
++
++add_library(tinyxml SHARED ${tinyxml_SRCS})
++
++set_target_properties(tinyxml PROPERTIES VERSION 2.6.2
++                                         SOVERSION 2.6.2)
++
++target_include_directories(tinyxml PUBLIC "$<BUILD_INTERFACE:${tinyxml_HDRS}>")
++install(TARGETS tinyxml DESTINATION lib EXPORT TinyXMLTargets)
++install(FILES ${tinyxml_HDRS} DESTINATION include)
++
++
++include(CMakePackageConfigHelpers)
++
++configure_package_config_file(TinyXMLConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/TinyXMLConfig.cmake
++                              INSTALL_DESTINATION ${LIB_INSTALL_DIR}/TinyXML/cmake
++                              PATH_VARS INCLUDE_INSTALL_DIR)
++
++write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/TinyXMLConfigVersion.cmake
++                                 VERSION 2.6.2
++                                 COMPATIBILITY AnyNewerVersion)
++
++install(EXPORT TinyXMLTargets
++        NAMESPACE "TinyXML:"
++        DESTINATION ${LIB_INSTALL_DIR}/TinyXML/cmake)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TinyXMLConfig.cmake
++              ${CMAKE_CURRENT_BINARY_DIR}/TinyXMLConfigVersion.cmake
++        DESTINATION ${LIB_INSTALL_DIR}/TinyXML/cmake)
+diff --git a/TinyXMLConfig.cmake.in b/TinyXMLConfig.cmake.in
+new file mode 100644
+index 0000000..984f7ba
+--- /dev/null
++++ b/TinyXMLConfig.cmake.in
+@@ -0,0 +1,6 @@
++set(TINYXML_VERSION 2.6.2)
++
++@PACKAGE_INIT@
++
++set_and_check(TINYXML_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
++check_required_components(TinyXML)
+\ No newline at end of file
+-- 
+1.7.10.4
+
